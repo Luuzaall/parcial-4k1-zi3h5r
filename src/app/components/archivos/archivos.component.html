@@ -1,0 +1,186 @@
+<div class="tituloPagina">
+  {{ Titulo }} <small>{{ TituloAccionLM[AccionLM] }}</small>
+</div>
+
+<!-- LISTADO DE ARCHIVOS -->
+<div id="divTablaResultados" *ngIf="AccionLM == 'L' && Archivos?.length > 0">
+  <table class="table table-hover table-sm table-bordered table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Vistas</th>
+        <th class="text-center">Activo</th>
+        <th class="text-center text-nowrap">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let archivo of Archivos">
+        <td>{{ archivo.archivo | uppercase }}</td>
+        <td class="text-right">{{ archivo.vistas }}</td>
+        <td>{{ archivo.activo ? 'SI' : 'NO' }}</td>
+        <td class="text-center">
+          <button
+            class="btn btn-sm btn-outline-primary"
+            title="Modificar"
+            (click)="Modificar(archivo)"
+          >
+            <i class="fa fa-pencil">Modificar</i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!--No se encontraron registros-->
+  <div
+    class="alert alert-info mensajesAlert"
+    *ngIf="AccionLM == 'L' && Archivos?.length == 0"
+  >
+    <i class="fa fa-exclamation-sign"></i>{{ Mensajes['SD'] }}
+  </div>
+</div>
+
+<!-- Registro en Modificacion de Archivos -->
+<form
+  name="FormModificacion"
+  [formGroup]="FormModificacion"
+  *ngIf="AccionLM != 'L'"
+>
+  <div class="container-fluid">
+    <!-- Label del ID de archivo -->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label">Id Archivo:</label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <label id="idArchivo"> </label>
+      </div>
+    </div>
+
+    <!--campo Archivo-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="archivo"
+          ><span class="text-danger">*</span>Nombre:</label
+        >
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="archivo"
+          [ngClass]="{
+            'is-invalid':
+              (FormModificacion.controls['archivo'].touched || submitted) &&
+              FormModificacion.controls['archivo'].errors
+          }"
+        />
+
+        <div
+          class="validacion"
+          *ngIf="
+            (FormModificacion.controls['archivo'].touched || submitted) &&
+            FormModificacion.controls['archivo'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormModificacion.controls['archivo'].touched || submitted) &&
+            (FormModificacion.controls['archivo'].hasError('minlength') ||
+              FormModificacion.controls['archivo'].hasError('maxlength'))
+          "
+        >
+          Dato texto, 4 a 50 caracteres.
+        </div>
+      </div>
+    </div>
+
+    <!--campo vistas-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="vistas"
+          ><span class="text-danger">*</span>Vistas:</label
+        >
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          name="vistas"
+          class="form-control"
+          formControlName="vistas"
+          [ngClass]="{
+            'is-invalid':
+              (FormModificacion.controls['vistas'].touched || submitted) &&
+              FormModificacion.controls['vistas'].errors
+          }"
+        />
+        <div
+          class="validacion"
+          *ngIf="
+            (FormModificacion.controls['vistas'].touched || submitted) &&
+            FormModificacion.controls['vistas'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormModificacion.controls['vistas'].touched || submitted) &&
+            FormModificacion.controls['vistas'].hasError('pattern')
+          "
+        >
+          Dato numérico, 1 a 7 dígitos.
+        </div>
+      </div>
+    </div>
+
+    <!--campo activo-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="activo"
+          ><span class="text-danger">*</span>Activo:</label
+        >
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <select class="form-control" name="activo" formControlName="activo">
+          <option *ngFor="let opt of OpcionesActivo" [ngValue]="opt.Id">
+            ‌{{ opt.Nombre }}
+          </option>
+        </select>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormModificacion.controls['vistas'].touched || submitted) &&
+            FormModificacion.controls['vistas'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones Grabar, Cancelar' -->
+    <hr />
+    <div class="row justify-content-center botones">
+      <button type="button" class="btn btn-primary" (click)="Grabar()">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      &nbsp;
+      <button type="button" class="btn btn-warning" (click)="Cancelar()">
+        <i class="fa fa-undo"></i>Cancelar
+      </button>
+    </div>
+
+    <!--texto: Revisar los datos ingresados...-->
+    <div
+      *ngIf="submitted && FormModificacion.invalid"
+      class="row alert alert-danger mensajesAlert"
+    >
+      <i class="fa fa-exclamation-sign"></i>{{ Mensajes['RD'] }}
+    </div>
+  </div>
+</form>
